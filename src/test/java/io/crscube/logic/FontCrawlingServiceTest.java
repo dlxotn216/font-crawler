@@ -19,6 +19,10 @@ public class FontCrawlingServiceTest {
 	@Autowired
 	private FontCrawlingService fontCrawlingService;
 	
+	/**
+	 * 테스트를 통해 원하는 Early access의 font resource를 다운로드 받을 수 있습니다
+	 * 단 font-face meta 파일을 먼저 별도 저장소에 저장한 후 아래의 테스트를 수행해야합니다.
+	 */
 	@Test
 	public void GoogleEarlyAccessCrawlingTest(){
 		fontCrawlingService.crawling(Arrays.asList("https://fonts.googleapis.com/earlyaccess/notosanskr.css",

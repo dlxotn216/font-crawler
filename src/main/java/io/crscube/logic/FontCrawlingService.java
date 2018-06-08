@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.stereotype.Service;
@@ -54,31 +55,20 @@ import java.util.stream.Stream;
 @Service
 public class FontCrawlingService {
 	
-	private static final int DEFAULT_THREAD_POOL_SIZE = 4;
+	@Value("${app.thread_pool_size}")
+	private int threadPoolSize;
 	
-	private static final String DEFAULT_SAVE_ROOT_PATH = "src/main/resources/static/fonts";
+	@Value("${app.default_save_root_path}")
+	private String saveRootPath;
 	
 	private ExecutorService executor;
 	
-	private String saveRootPath;
-	
 	private RestTemplate restTemplate;
-	
-	FontCrawlingService() {
-		this(DEFAULT_THREAD_POOL_SIZE);
-	}
-	
-	FontCrawlingService(int threadSize) {
-		this(threadSize, DEFAULT_SAVE_ROOT_PATH);
-	}
-	
-	FontCrawlingService(int threadSize, String saveRootPath) {
-		this.executor = Executors.newFixedThreadPool(threadSize);
-		this.saveRootPath = saveRootPath;
-	}
-	
+
 	@PostConstruct
 	public void init() {
+		executor = Executors.newFixedThreadPool(threadPoolSize);
+		
 		restTemplate = new RestTemplate();
 		restTemplate.getMessageConverters().add(new ByteArrayHttpMessageConverter());
 	}
@@ -106,6 +96,7 @@ public class FontCrawlingService {
 				).collect(Collectors.toList());
 		
 		futures.forEach(CompletableFuture::join);
+		log.info("====================finished==========================");
 	}
 	
 	/**
